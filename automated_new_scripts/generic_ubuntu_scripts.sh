@@ -9,20 +9,22 @@
 #Rname(e.g. xenial/bionic/cosmic/disco/eoan)
 
 ##variables
-series = $1
-version = $2
-release = $3
-rname = $4
+series=$1
+version=$2
+release=$3
+rname=$4
 
 cd src/github/glusterfs-debian/
 git checkout -b ${rname}-${series}-local origin/${rname}-glusterfs-${series}
 
-sed -i "1s/^/glusterfs (${version}-ubuntu1~${rname}1) ${rname}; urgency=medium\n\n * GlusterFS ${version} GA \n\n – GlusterFS GlusterFS deb packages <deb.packages@gluster.org> `date +"%a, %d %b %Y %T %z"` \n\n/" debian/changelog
-
-git commit -a -m "Glusterfs ${version} ${rname} G.A"
+sed -i "1s/^/glusterfs (${version}-ubuntu1~${rname}1) ${rname}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  Thu, 18 Jul 2019 09:50:00 -0400\n\n/" debian/changelog
+#sed -i "1s/^/glusterfs (${version}-ubuntu1~${rname}1) ${rname}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  `date +"%a, %d %b %Y %T %z"` \n\ndebian/changelog
+git commit -a -m "Glusterfs ${version} G.A (${rname})"
 git push origin ${rname}-${series}-local:${rname}-glusterfs-${series}
 
 sudo pbuilder create --distribution ${rname} --mirror http://ubuntu.osuosl.org/ubuntu/ --debootstrapopts "--keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg"
+
+cd
 
 mkdir build
 
@@ -40,11 +42,11 @@ else
         cp ${TGZS[0]} .
 fi
 
-ln -s glusterfs-${VERSION}.tar.gz glusterfs_${VERSION}.orig.tar.gz
+ln -s glusterfs-${version}.tar.gz glusterfs_${version}.orig.tar.gz
 
-tar xpf glusterfs-${VERSION}.tar.gz
+tar xpf glusterfs-${version}.tar.gz
 
-cd glusterfs-${VERSION}
+cd glusterfs-${version}
 
 cp -a /home/glusterpackager/src/github/glusterfs-debian/debian .
 
@@ -53,7 +55,7 @@ debuild -S -sa -k4F5B5CA5
 cd ..
 
 ##commented for testing purpose
-#dput ppa:gluster/glusterfs-${series} glusterfs_${version}-ubuntu1~${rname}${release}_source.changes
+dput ppa:gluster/glusterfs-${series} glusterfs_${version}-ubuntu1~${rname}${release}_source.changes
 
 cd ..
 
