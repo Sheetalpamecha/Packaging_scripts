@@ -1,8 +1,5 @@
 #!/bin/bash
 
-##to be taken care of by packaging script
-#ssh user@rhs-vm-17.storage-dev.lab.eng.bos.redhat.com
-
 #Series (e.g. 4.1)
 #Version (e.g. 4.1.0)
 #Release (e.g. 1)
@@ -17,8 +14,7 @@ rname=$4
 cd src/github/glusterfs-debian/
 git checkout -b ${rname}-${series}-local origin/${rname}-glusterfs-${series}
 
-sed -i "1s/^/glusterfs (${version}-ubuntu1~${rname}1) ${rname}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  Thu, 18 Jul 2019 09:50:00 -0400\n\n/" debian/changelog
-#sed -i "1s/^/glusterfs (${version}-ubuntu1~${rname}1) ${rname}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  `date +"%a, %d %b %Y %T %z"` \n\ndebian/changelog
+sed -i "1s/^/glusterfs (${version}-ubuntu1~${rname}1) ${rname}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  `date +"%a, %d %b %Y %T %z"` \n\ndebian/changelog
 git commit -a -m "Glusterfs ${version} G.A (${rname})"
 git push origin ${rname}-${series}-local:${rname}-glusterfs-${series}
 
@@ -54,7 +50,6 @@ debuild -S -sa -k4F5B5CA5
 
 cd ..
 
-##commented for testing purpose
 dput ppa:gluster/glusterfs-${series} glusterfs_${version}-ubuntu1~${rname}${release}_source.changes
 
 cd ..
