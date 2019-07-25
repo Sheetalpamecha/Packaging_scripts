@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#OS (Ubuntu/Denial)
+#OS (e.g. Ubuntu/Debian)
 #Series (e.g. 4.1)
 #Version (e.g. 4.1.0)
 #Release (e.g. 1)
@@ -61,6 +61,8 @@ sudo pbuilder create --distribution ${rname} --mirror ${mirror} --debootstrapopt
 
 cd
 
+echo "Building glusterfs-${VERSION}-$RELEASE for $RNAME"
+
 mkdir build
 
 cd ~/build
@@ -107,5 +109,5 @@ else
 	tar czf ~/glusterfs-${version}-${release}/${rname}-apt-amd64-${version}.tgz pool/ dists/
 	cd
 	mv build packages glusterfs-${version}-${release}/
-
+fi
 echo "Done."
