@@ -4,10 +4,10 @@
 #Series (e.g. 4.1)
 #Version (e.g. 4.1.0)
 #Release (e.g. 1)
-#Rname/Flavor(e.g. Ubuntu - xenial/bionic/cosmic/disco/eoan, Debian - buster/stretch/bullseye)
+#Flavor(e.g. Ubuntu - xenial/bionic/cosmic/disco/eoan, Debian - buster/stretch/bullseye)
 
 os=$1
-rname=$2
+flavor=$2
 series=$3
 version=$4
 release=$5
@@ -44,24 +44,24 @@ else
           "5" | "6" | "7")
             debuild_key=${pbuild_keys[3]}
             pbuild_key=${pbuild_keys[3]}
-       esac
+        esac
 fi
 
 cd src/github/glusterfs-debian/
 
-git checkout -b ${rname}-${series}-local origin/${rname}-glusterfs-${series}
+git checkout -b ${flavor}-${series}-local origin/${flavor}-glusterfs-${series}
 
-sed -i "1s/^/glusterfs (${version}-${os}1~${rname}1) ${rname}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  `date +"%a, %d %b %Y %T %z"` \n\n" debian/changelog
+sed -i "1s/^/glusterfs (${version}-${os}1~${flavor}1) ${flavor}; urgency=medium\n\n  * GlusterFS ${version} GA\n\n -- GlusterFS GlusterFS deb packages <deb.packages@gluster.org>  `date +"%a, %d %b %Y %T %z"` \n\n" debian/changelog
 
-git commit -a -m "Glusterfs ${version} G.A (${rname})"
+git commit -a -m "Glusterfs ${version} G.A (${flavor})"
 
-git push origin ${rname}-${series}-local:${rname}-glusterfs-${series}
+git push origin ${flavor}-${series}-local:${flavor}-glusterfs-${series}
 
-sudo pbuilder create --distribution ${rname} --mirror ${mirror} --debootstrapopts "--keyring=/usr/share/keyrings/`${os}`-archive-keyring.gpg"
+sudo pbuilder create --distribution ${flavor} --mirror ${mirror} --debootstrapopts "--keyring=/usr/share/keyrings/`${os}`-archive-keyring.gpg"
 
 cd
 
-mkdir build
+mkdir build packages
 
 cd ~/build
 
@@ -89,10 +89,10 @@ debuild -S -sa -k${debuild_key}
 cd ..
 
 if [ "$os" == "ubuntu" ]; then
-        dput ppa:gluster/glusterfs-${series} glusterfs_${version}-ubuntu1~${rname}${release}_source.changes
+        dput ppa:gluster/glusterfs-${series} glusterfs_${version}-ubuntu1~${flavor}${release}_source.changes
 	cd ..
-	mkdir glusterfs-${version}-${release}-${rname}
-	mv build glusterfs-${version}-${release}-${rname}/
+	mkdir glusterfs-${version}-${release}-${flavor}
+	mv build glusterfs-${version}-${release}-${flavor}/
 else
 	sudo pbuilder build glusterfs_${version}-${release}.dsc | tee build.log
 	cd ~/packages
@@ -101,10 +101,10 @@ else
 	cd /var/www/repos/apt/debian/
 	rm -rf pool/* dists/* db/*
 	cp ~/conf.distributions/${series} conf/distributions
-	for i in ~/packages/glusterfs-*${version}-${release}*.deb; do reprepro includedeb stretch $i; done
-	reprepro includedsc stretch ~/build/glusterfs_${version}-${release}.dsc
+	for i in ~/packages/glusterfs-*${version}-${release}*.deb; do reprepro includedeb $flavor $i; done
+	reprepro includedsc ${flavor} ~/build/glusterfs_${version}-${release}.dsc
 	mkdir ~/glusterfs-${version}-${release}
-	tar czf ~/glusterfs-${version}-${release}/${rname}-apt-amd64-${version}.tgz pool/ dists/
+	tar czf ~/glusterfs-${version}-${release}/${flavor}-apt-amd64-${version}.tgz pool/ dists/
 	cd
 	mv build packages glusterfs-${version}-${release}/
 
