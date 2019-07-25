@@ -61,7 +61,7 @@ sudo pbuilder create --distribution ${flavor} --mirror ${mirror} --debootstrapop
 
 cd
 
-echo "Building glusterfs-${VERSION}-$RELEASE for $RNAME"
+echo "Building glusterfs-${version}-${release} for ${flavor}"
 
 mkdir build packages
 
